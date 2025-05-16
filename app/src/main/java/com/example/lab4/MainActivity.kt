@@ -1,59 +1,121 @@
 package com.example.lab4
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.time.LocalDate
-
 
 class MainActivity : AppCompatActivity() {
 
     private val taskList = mutableListOf<Task>()
     private lateinit var taskAdapter: TaskAdapter
+    private lateinit var recyclerView: RecyclerView
 
+    private val addTaskLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val newTask = result.data?.getParcelableExtra<Task>(AddTaskActivity.NEW_TASK_EXTRA_KEY)
+            if (newTask != null) {
+                taskList.add(0, newTask)
+                sortTasksAndNotifyAdapter()
+            }
+        }
+    }
 
-    @SuppressLint("NotifyDataSetChanged")
+    private val viewTaskLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val returnedTask = result.data?.getParcelableExtra<Task>(TaskDetailActivity.RESULT_TASK_OBJECT_KEY)
+            val action = result.data?.getIntExtra(TaskDetailActivity.RESULT_TASK_ACTION_KEY, TaskDetailActivity.ACTION_NO_CHANGE)
+
+            if (returnedTask != null) {
+                val taskIndex = taskList.indexOfFirst { it.id == returnedTask.id }
+
+                when (action) {
+                    TaskDetailActivity.ACTION_COMPLETED_TOGGLED, TaskDetailActivity.ACTION_UPDATED -> {
+                        if (taskIndex != -1) {
+                            taskList[taskIndex] = returnedTask
+                        } else {
+                            Toast.makeText(this, "Ошибка обновления задачи", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    TaskDetailActivity.ACTION_DELETED -> {
+                        if (taskIndex != -1) {
+                            taskList.removeAt(taskIndex)
+                        } else {
+                            Toast.makeText(this, "Ошибка удаления задачи", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    TaskDetailActivity.ACTION_NO_CHANGE -> {
+                    }
+                }
+                sortTasksAndNotifyAdapter()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val recyclerView: RecyclerView = findViewById(R.id.taskRecyclerView)
+        recyclerView = findViewById(R.id.taskRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         taskAdapter = TaskAdapter(taskList) { task ->
-            // Обработка нажатия — откроем карточку задачи
-            //val intent = Intent(this, TaskDetailActivity::class.java)
-            //intent.putExtra("task_title", task.title)
-            //intent.putExtra("task_description", task.description)
-            //intent.putExtra("task_due_date", task.dueDate?.toString())
-            //startActivity(intent)
+            val intent = Intent(this, TaskDetailActivity::class.java)
+            intent.putExtra(TaskDetailActivity.TASK_EXTRA_KEY, task)
+            viewTaskLauncher.launch(intent)
         }
         recyclerView.adapter = taskAdapter
-        taskList.add(Task("Купить молоко", "Сходить в магазин и купить молоко", LocalDate.now()))
-        taskList.add(Task("Купить молоко", "Сходить в магазин и купить молоко", null))
 
-        taskAdapter.notifyDataSetChanged()
+        addSampleTasks()
+        sortTasksAndNotifyAdapter()
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        val customView = layoutInflater.inflate(R.layout.toolbar_custom, toolbar, false)
-        toolbar.addView(customView)
+        val customToolbarView = layoutInflater.inflate(R.layout.toolbar_custom, toolbar, false)
+        toolbar.addView(customToolbarView)
 
-        val btnAdd: ImageButton = customView.findViewById(R.id.button_add)
+        val btnAdd: ImageButton = customToolbarView.findViewById(R.id.button_add_toolbar)
         btnAdd.setOnClickListener {
-            // переход к экрану "Форма добавления дела"
+            val intent = Intent(this, AddTaskActivity::class.java)
+            addTaskLauncher.launch(intent)
         }
     }
-}
 
+    private fun addSampleTasks() {
+        taskList.add(Task(title = "Купить молоко очень-очень срочно", description = "Сходить в магазин и купить самое свежее молоко, которое только можно найти, а также не забыть про хлеб и масло.", dueDate = LocalDate.now().plusDays(1)))
+        taskList.add(Task(title = "Забрать важную посылку почта", description = "Посылка на почте, нужно забрать до закрытия. Там что-то очень ценное для проекта.", dueDate = LocalDate.now().minusDays(1))) // Просроченная
+        taskList.add(Task(title = "Подготовить отчет по проекту X", description = "Собрать все данные, оформить в таблицу и написать сопроводительное письмо для начальства.", dueDate = LocalDate.now().plusDays(3)))
+        taskList.add(Task(title = "Записаться на стрижку в салон", description = "Найти хорошего мастера и записаться на следующей неделе.", createdAt = LocalDate.now().minusDays(1), isCompleted = false))
+        taskList.add(Task(title = "Прочитать книгу до конца недели", description = "Книга по программированию, очень важная для саморазвития.", dueDate = LocalDate.now().plusDays(5), isCompleted = true)) // Завершенная
+    }
+
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun sortTasksAndNotifyAdapter() {
+        taskList.sortWith(
+            compareBy<Task> { it.isCompleted }
+                .thenComparing(compareBy<Task> {
+                    if (it.isCompleted) null else it.dueDate == null
+                }.thenByDescending {
+                    if (it.isCompleted) null else it.dueDate?.isBefore(LocalDate.now()) ?: false
+                }.thenBy {
+                    if (it.isCompleted) null else it.dueDate
+                }.thenBy {
+                    if (it.isCompleted) null else it.createdAt
+                })
+                .thenComparing(compareBy<Task> {if (it.isCompleted) it.createdAt else null})
+
+        )
+        taskAdapter.updateTasks(taskList)
+    }
+}

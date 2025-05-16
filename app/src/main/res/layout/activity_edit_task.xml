@@ -1,0 +1,125 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginBottom="24dp"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:paddingStart="16dp">
+
+        <ImageButton
+            android:id="@+id/button_back_edit_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="?attr/homeAsUpIndicator"
+            app:tint="?attr/colorOnPrimary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Назад"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:id="@+id/textViewHeaderEditTask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Редактирование"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
+    <!-- Название (обязательно) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Название *"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <EditText
+        android:id="@+id/editTextEditTaskTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите название задачи"
+        android:inputType="textCapSentences"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <!-- Краткое описание -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Краткое описание"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <EditText
+        android:id="@+id/editTextEditTaskDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите краткое описание (необязательно)"
+        android:inputType="textCapSentences|textMultiLine"
+        android:minLines="2"
+        android:gravity="top"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <!-- Срок выполнения (УСЛОЖНЕНИЕ) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Срок выполнения *"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <TextView
+        android:id="@+id/textViewEditTaskDueDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:padding="12dp"
+        android:background="?android:attr/editTextBackground"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:hint="Нажмите, чтобы выбрать дату"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <Button
+        android:id="@+id/button_save_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сохранить"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="?attr/colorOnPrimary"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <Button
+        android:id="@+id/button_delete_task_edit_form"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Удалить задачу"
+        android:textColor="@android:color/holo_red_dark"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+</LinearLayout>

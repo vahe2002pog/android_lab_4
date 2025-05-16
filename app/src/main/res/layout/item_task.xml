@@ -1,42 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="4dp"
     card_view:cardCornerRadius="8dp"
     card_view:cardElevation="4dp">
 
     <LinearLayout
+        android:id="@+id/task_item_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="auto"
-        android:background="@drawable/ripple_effect"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
 
         <TextView
-            android:id="@+id/taskTitle"
+            android:id="@+id/taskTitleItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Название задачи очень длинное"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/taskDescription"
+            android:id="@+id/taskDescriptionItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:text="Краткое описание задачи, которое может быть достаточно длинным для проверки обрезки"/>
 
         <TextView
-            android:id="@+id/taskDueDate"
+            android:id="@+id/taskDueDateItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="12sp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/grey_text_color_item"
+            android:textSize="12sp"
+            android:text="Срок: 25.12.2023"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
