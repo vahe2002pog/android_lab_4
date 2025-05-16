@@ -26,7 +26,7 @@ class EditTaskActivity : AppCompatActivity() {
     private lateinit var deleteButton: Button
     private lateinit var backButton: ImageButton
 
-    private var selectedDueDate: LocalDate? = null
+    private lateinit var selectedDueDate: LocalDate
 
     companion object {
         const val EXTRA_TASK_TO_EDIT = "EXTRA_TASK_TO_EDIT"
@@ -79,23 +79,18 @@ class EditTaskActivity : AppCompatActivity() {
     private fun populateFields() {
         titleEditText.setText(currentTask.title)
         descriptionEditText.setText(currentTask.description)
-        selectedDueDate = currentTask.dueDate
+        selectedDueDate = currentTask.dueDate ?: LocalDate.now()
         updateDueDateDisplay()
     }
 
     private fun updateDueDateDisplay() {
-        if (selectedDueDate != null) {
-            dueDateTextView.text = selectedDueDate!!.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-        } else {
-            dueDateTextView.text = "Дата не выбрана (обязательно)"
-        }
+        dueDateTextView.text = selectedDueDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
     }
 
     private fun showDatePickerDialog() {
-        val initialDate = selectedDueDate ?: LocalDate.now()
-        val year = initialDate.year
-        val month = initialDate.monthValue - 1
-        val day = initialDate.dayOfMonth
+        val year = selectedDueDate.year
+        val month = selectedDueDate.monthValue - 1
+        val day = selectedDueDate.dayOfMonth
 
         DatePickerDialog(this,
             { _, selectedYear, selectedMonth, selectedDayOfMonth ->
@@ -112,14 +107,11 @@ class EditTaskActivity : AppCompatActivity() {
             Toast.makeText(this, "Поле 'Название *' обязательно для заполнения", Toast.LENGTH_SHORT).show()
             return
         }
-        if (selectedDueDate == null) {
-            Toast.makeText(this, "Поле 'Срок выполнения *' обязательно для заполнения", Toast.LENGTH_SHORT).show()
-            return
-        }
 
         val updatedTask = currentTask.copy(
             title = title,
             description = description,
+            dueDate = selectedDueDate
         )
 
         val resultIntent = Intent()
@@ -143,6 +135,7 @@ class EditTaskActivity : AppCompatActivity() {
             .setNegativeButton("Отмена", null)
             .show()
     }
+
     override fun onBackPressed() {
         setResult(Activity.RESULT_CANCELED)
         super.onBackPressed()
