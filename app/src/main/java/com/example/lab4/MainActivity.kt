@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity() {
         }
         recyclerView.adapter = taskAdapter
 
-        addSampleTasks()
         sortTasksAndNotifyAdapter()
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -90,15 +89,7 @@ class MainActivity : AppCompatActivity() {
             addTaskLauncher.launch(intent)
         }
     }
-
-    private fun addSampleTasks() {
-        taskList.add(Task(title = "Купить молоко очень-очень срочно", description = "Сходить в магазин и купить самое свежее молоко, которое только можно найти, а также не забыть про хлеб и масло.", dueDate = LocalDate.now().plusDays(1)))
-        taskList.add(Task(title = "Забрать важную посылку почта", description = "Посылка на почте, нужно забрать до закрытия. Там что-то очень ценное для проекта.", dueDate = LocalDate.now().minusDays(1))) // Просроченная
-        taskList.add(Task(title = "Подготовить отчет по проекту X", description = "Собрать все данные, оформить в таблицу и написать сопроводительное письмо для начальства.", dueDate = LocalDate.now().plusDays(3)))
-        taskList.add(Task(title = "Записаться на стрижку в салон", description = "Найти хорошего мастера и записаться на следующей неделе.", createdAt = LocalDate.now().minusDays(1), isCompleted = false))
-        taskList.add(Task(title = "Прочитать книгу до конца недели", description = "Книга по программированию, очень важная для саморазвития.", dueDate = LocalDate.now().plusDays(5), isCompleted = true)) // Завершенная
-    }
-
+    
 
     @SuppressLint("NotifyDataSetChanged")
     private fun sortTasksAndNotifyAdapter() {
